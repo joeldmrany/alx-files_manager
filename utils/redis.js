@@ -3,15 +3,11 @@ import { createClient } from 'redis';
 class RedisClient {
   constructor(){
     this.client = createClient();
-    this.client.connect();
+    this.client.connect().catch((error) => console.error(`Connection Failed: ${error}`));
   }
 
   isAlive() {
-    if (this.client.connect) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.client.isOpen;
   }
 
   async get(key) {
@@ -40,5 +36,5 @@ class RedisClient {
     }
   }
 }
-const redisClient = new RedisClient;
+const redisClient = new RedisClient();
 export default redisClient;
