@@ -3,28 +3,19 @@ import { createClient } from 'redis';
 class RedisClient {
   constructor(){
     this.client = createClient();
-    this._isAlive = false;
-    console.log('Starting Client');
-    this.connect();
-  }
-
-
-  connect() {
-    this.client.connect().then(() => {
-      this._isAlive = true;
-    });
-    this.client.once('end', () => {
-      this._isAlive = false;
-    })
   }
 
   isAlive() {
-    return this._isAlive;
+    this.client.connect()
+    if (this.client.isOpen) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   async get(key) {
     try {
-      console.log('getting the key');
       return await this.client.get(key);
     } catch (e) {
       console.error(`Get Error:${e}`);
@@ -33,7 +24,6 @@ class RedisClient {
 
   async set(key, value, duration) {
     try {
-      console.log('Setting key with value and duration');
       await this.client.set(key, value, {
         EX: duration,
       });
@@ -44,7 +34,6 @@ class RedisClient {
 
   async del(key) {
     try {
-      console.log('Deleting the key');
       await this.client.del(key);
     } catch (e) {
       console.error(`Del Error:${e}`);
