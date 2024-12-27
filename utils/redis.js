@@ -1,7 +1,7 @@
 import { createClient } from 'redis';
 
 class RedisClient {
-  constructor(){
+  constructor() {
     this.client = createClient();
     this.connected = false;
 
@@ -20,47 +20,54 @@ class RedisClient {
           this.connected = true;
           resolve();
         } catch (e) {
-          reject('Failed to connect to the server');
+          console.error(`There is an error in correction: ${e}`);
+          reject(e);
         }
       })();
-    })
+    });
   }
+
   isAlive() {
     return this.connected && this.client.isOpen;
   }
 
   async get(key) {
+    if (!this.isAlive()) {
+      return null;
+    }
     try {
-      if (!this.isAlive()) {
-        return null;
-      }
       return await this.client.get(key);
     } catch (e) {
       console.error(`Get Error:${e}`);
+      return null;
     }
   }
 
   async set(key, value, duration) {
+    if (!this.isAlive()) {
+      return null;
+    }
     try {
-      if (!this.isAlive()) {
-        return null;
-      }
       await this.client.set(key, value, {
         EX: duration,
       });
+      return null;
     } catch (e) {
       console.error(`Set Error:${e}`);
+      return null;
     }
   }
 
   async del(key) {
+    if (!this.isAlive()) {
+      return null;
+    }
     try {
-      if (!this.isAlive()) {
-        return null;
-      }
       await this.client.del(key);
+      return null;
     } catch (e) {
       console.error(`Del Error:${e}`);
+      return null;
     }
   }
 }

@@ -3,8 +3,9 @@ import express from 'express';
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.get('./routes/indexed.js', (req, res) => {
-  res.send('Hello')
+app.all('./routes/indexed.js', (req, res, next) => {
+  console.log('Accessing all routes');
+  next();
 });
 
 app.listen(port, () => {
