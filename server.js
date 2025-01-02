@@ -1,5 +1,5 @@
 import express from 'express';
-import ControllerRouting from './routes/index';
+import ControllerRoutes from './routes/index';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to My API');
 });
 
-ControllerRouting(app);
+ControllerRoutes(app);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
