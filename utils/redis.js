@@ -3,73 +3,58 @@ import { createClient } from 'redis';
 class RedisClient {
   constructor() {
     this.client = createClient();
-    this.connected = false;
-
-    try {
-      this.connect();
-    } catch (e) {
-      console.error(`There is Error in connection: ${e}`);
-    }
-  }
-
-  connect() {
-    return new Promise((resolve, reject) => {
-      (async () => {
-        try {
-          this.client.connect();
-          this.connected = true;
-          resolve();
-        } catch (e) {
-          console.error(`There is an error in correction: ${e}`);
-          reject(e);
-        }
-      })();
+    this.connected = true;
+    this.client.on('error', (err) => {
+      console.error('Redis Client Error', err);
+      this.connected = false;
     });
+    this.client.connect();
   }
 
-  isAlive() {
-    return this.connected && this.client.isOpen;
+  get isAlive() {
+    return this.client.isOpen && this.connected;
   }
 
   async get(key) {
-    if (!this.isAlive()) {
-      return null;
-    }
     try {
+      if (!this.isAlive()) {
+        return null;
+      }
       return await this.client.get(key);
     } catch (e) {
       console.error(`Get Error:${e}`);
-      return null;
+      return false;
     }
   }
 
   async set(key, value, duration) {
-    if (!this.isAlive()) {
-      return null;
-    }
     try {
+      if (!this.isAlive()) {
+        return null;
+      }
       await this.client.set(key, value, {
         EX: duration,
       });
-      return null;
+      return true;
     } catch (e) {
       console.error(`Set Error:${e}`);
-      return null;
+      return false;
     }
   }
 
   async del(key) {
-    if (!this.isAlive()) {
-      return null;
-    }
     try {
+      if (!this.isAlive()) {
+        return null;
+      }
       await this.client.del(key);
-      return null;
+      return true;
     } catch (e) {
       console.error(`Del Error:${e}`);
-      return null;
+      return false;
     }
   }
 }
+
 const redisClient = new RedisClient();
 export default redisClient;
