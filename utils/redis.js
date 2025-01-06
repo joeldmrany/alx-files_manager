@@ -17,7 +17,7 @@ class RedisClient {
 
   async get(key) {
     try {
-      if (!this.isAlive()) {
+      if (!this.isAlive) {
         return null;
       }
       return await this.client.get(key);
@@ -29,7 +29,7 @@ class RedisClient {
 
   async set(key, value, duration) {
     try {
-      if (!this.isAlive()) {
+      if (!this.isAlive) {
         return null;
       }
       await this.client.set(key, value, {
@@ -44,7 +44,7 @@ class RedisClient {
 
   async del(key) {
     try {
-      if (!this.isAlive()) {
+      if (!this.isAlive) {
         return null;
       }
       await this.client.del(key);
